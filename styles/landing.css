@@ -24,6 +24,9 @@ body.landing {
      text-transform: uppercase;
      letter-spacing: 0.5rem;
      text-shadow: 1px 1px 0px rgb(58,23,63);
+     -webkit-transition: all 0.25s ease-in-out;
+     -moz-transition: all 0.25s ease-in-out;
+     transition: all 0.25s ease-in-out;
  }
  
  .selling-points {
@@ -36,6 +39,16 @@ body.landing {
      position: relative;
      padding: 2rem;
      text-align: center;
+     opacity: 0;
+     -webkit-transform: scaleX(0.9) translateY(3rem); /*added the items from here and below in this class for animatable CSS */
+     -moz-transform: scaleX(0.9) translateY(3rem); /*this line and the one above make sure the transitions are compatible across browsers */
+     transform: scale(0.9) translateY(3rem);
+     -webkit-transition: all 0.25s ease-in-out;
+     -moz-transition: all 0.25s ease-in-out;
+     transition: all 0.25s ease-in-out;
+     -webkit-transition-delay: 0.2s;
+     -moz-transition-delay: 0.2s;
+     transition-delay: 0.2s;
  }
  
  .point .point-title {
