@@ -4,6 +4,7 @@ body.album {
     background-attachment: fixed;
     background-position: center center;
     background-size: cover;
+    padding-bottom: 200px; /* added to accomodate the music player that is anchored to the bottom of the page */
 }
 
 .album-cover-art {
