@@ -1,20 +1,13 @@
-var pointsArray = document.getElementsByClassName('point');
-
-var revealPoint = function(point) {
-    point.style.opacity = 1;
-    point.style.transform = "scaleX(1) translateY(0)";
-    point.style.msTransform = "scaleX(1) translateY(0)";
-    point.style.WebkitTransform = "scaleX(1) translateY(0)";
-}
-
 var animatePoints = function(points) {
-    forEach(points, revealPoint); 
-
+    var revealPoint = function() {
+        //#7 
+        $(this).css({
+            opacity: 1,
+            transform: 'scaleX(1) translate(0)'
+        });
+    };
     
-    /* for (var i = 0; i < points.length; i++) {
-        revealPoint(i);
-    } */
-                               
+    $.each($('.point'), revealPoint);               
 };
 
 var animateTitle = function () {
@@ -30,20 +23,22 @@ var animateTitle = function () {
     revealTitle();
 };
 
-window.onload = function () { //we added this function that enables things to happen after the whole DOM has been loaded by the browser.
-    //alert ("The window has loaded!");
-    if (window.innerHeight > 950) {
-        animatePoints(pointsArray);
-    }
+$(window).load(function () {
+    //#1 - updated the .innerHeight property to jQuery's heigh() method.  
+    if ($(window).height() > 950) {
+         animatePoints();
+     }
+
+    //#2 no longer need a seperate variable to hold .selling-points element and replace getBoundingClientRect() with jQuery's .offset() method.
+    var scrollDistance = $('.selling-points').offset().top - $(window).height() + 200;
     
-    var sellingPoints = document.getElementsByClassName('selling-points')[0];
-    var scrollDistance = sellingPoints.getBoundingClientRect().top - window.innerHeight + 200;
-    
-    window.addEventListener('scroll', function (event) {
-        //console.log("Current offset from the top is " + sellingPoints.getBoundingClientRect().top + "pixels"); 
-        if (document.documentElement.scrollTop || document.body.scrollTop >= scrollDistance) {
-            animatePoints(pointsArray);
+    //#3 - the addEventListener() method becomes jQuery's scroll() method, which takes a function as an argument.  
+    $(window).scroll(function (event) {
+        //#4 - replace document.documentElement.scrollTop || document.body.scrollTop with the jQuery equivalent of $(window).scrollTop().
+        if ($(window).scrollTop() >= scrollDistance) {
+            animatePoints();
         }
-    })
-}
+    
+    });
+});
 
