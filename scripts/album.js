@@ -39,7 +39,57 @@ var createSongRow = function(songNumber, songName, songLength) {
      + '</tr>'
      ;
     
-    return $(template);
+    var $row = $(template);
+    
+    var clickHandler = function() {
+        var songNumber = $(this).attr('data-song-number');
+        
+        if (currentlyPlayingSong !== null) {
+            //revert to song number for currently playing song because user started playing a new song.
+            var currentlyPlayingCell = $('.song-item-number[data-song-number="' + currentlyPlayingSong + '"]');
+            currentlyPlayingCell.html(currentlyPlayingSong);            
+        }
+        
+        if (currentlyPlayingSong !== songNumber) {
+            //switch from play to pause button to indicate a new song is playing.
+            $(this).html(pauseButtonTemplate);
+            currentlyPlayingSong = songNumber;            
+        } else if (currentlyPlayingSong === songNumber) {
+            //switch from pause to play button to pause currently playing song.
+            $(this).html(playButtonTemplate);
+            currentlyPlayingSong = null;
+        }
+                
+    };
+    
+    var onHover = function(event) {
+      //what to do when hovering over a song.  This first part finds the and stores the song number for that given song.
+        var songNumberCell = $(this).find('.song-item-number');
+        var songNumber = songNumberCell.attr('data-song-number');
+        //if you are a hovering over a song that is not what is currently playing, show the playButtonTemplate.
+        if (songNumber !== currentlyPlayingSong) {
+            songNumberCell.html(playButtonTemplate);
+        }
+    };
+    
+    var offHover = function(event) {
+        //what to do when the mouse leaves a song that is being hovered over.
+        var songNumberCell = $(this).find('.song-item-number');
+        var songNumber = songNumberCell.attr('data-song-number');
+        
+        //if you are leaving a song row that is not the currently playing song, show the songNumber (instead of the playButtonTemplate above)
+        if (songNumber !== currentlyPlayingSong) {
+            songNumberCell.html(songNumber);
+        }
+        
+    };
+    
+    //this is similar to querySelector(), using it hear to find '.song-item-number' for whichever row is clicked.  The click executes the callback we pass to it when the target element is clicked.
+    $row.find('.song-item-number').click(clickHandler);
+    //callback that executes one of the two functions below when someone hovers over and then leaves
+    $row.hover(onHover, offHover);
+    
+    return $row;
 };
 
 var setCurrentAlbum = function(album) {
@@ -67,56 +117,6 @@ var setCurrentAlbum = function(album) {
        
 };
 
-var findParentByClassName = function(element, targetClass) {
-    if (element) {
-        var currentParent = element.parentElement;
-        while (currentParent.className !== targetClass && currentParent.className !== null) {
-            currentParent = currentParent.parentElement;
-        }
-        return currentParent;
-    }
-};
-
-var getSongItem = function(element) {
-    switch (element.className) {
-        case 'album-song-button':
-        case 'ion-play':
-        case 'ion-pause':
-            return findParentByClassName(element, 'song-item-number');
-        case 'album-view-song-item':
-            return element.querySelector('.song-item-number');
-        case 'song-item-title':
-        case 'song-item-duration':
-            return findParentByClassName(element, 'album-view-song-item').querySelector('.song-item-number');
-        case 'song-item-number':
-            return element;
-        default:
-            return;
-    }  
-};
-
- var clickHandler = function(targetElement) {
-
-     var songItem = getSongItem(targetElement);
-
-     if (currentlyPlayingSong === null) {
-         songItem.innerHTML = pauseButtonTemplate;
-         currentlyPlayingSong = songItem.getAttribute('data-song-number');
-     } else if (currentlyPlayingSong === songItem.getAttribute('data-song-number')) {
-         songItem.innerHTML = playButtonTemplate;
-         currentlyPlayingSong = null;
-     } else if (currentlyPlayingSong !== songItem.getAttribute('data-song-number')) {
-         var currentlyPlayingSongElement = document.querySelector('[data-song-number="' + currentlyPlayingSong + '"]');
-         currentlyPlayingSongElement.innerHTML = currentlyPlayingSongElement.getAttribute('data-song-number');
-         songItem.innerHTML = pauseButtonTemplate;
-         currentlyPlayingSong = songItem.getAttribute('data-song-number');
-     }
-
- };
-var songListContainer = document.getElementsByClassName('album-view-song-list')[0];
-
-var songRows = document.getElementsByClassName('album-view-song-item');
-
 //Album button templates
 var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></span></a>';
 
@@ -125,41 +125,9 @@ var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause">
 //store state of playing songs.  This is set as null so that no song is identified as playing until we click one.
 var currentlyPlayingSong = null;
 
-window.onload = function () {
+$(document).ready(function() {
     setCurrentAlbum(albumPicasso);
     
-    songListContainer.addEventListener('mouseover', function(event) {
-       //#1 - the target property here stores the DOM element where the event occured.  
-        //console.log(event.target);
-        if (event.target.parentElement.className === 'album-view-song-item') {
-            var songItem = getSongItem(event.target);
-            
-            if (songItem.getAttribute('data-song-number') !== currentlyPlayingSong) {
-                songItem.innerHTML = playButtonTemplate;
-            }
-        }
-        
-    });
-    
-    
-    
-    for (var i = 0; i < songRows.length; i++) {
-        songRows[i].addEventListener('mouseleave', function(event) {
-           //#1 caching the song item we're leaving in a variable.  
-            var songItem = getSongItem(event.target);
-            var songItemNumber = songItem.getAttribute('data-song-number');
-            
-            //#2 added the conditional that checks that the item the mouse is leaving is not the current song and only change the content if it isn't.  
-            if (songItemNumber !== currentlyPlayingSong) {
-                songItem.innerHTML = songItemNumber;
-            }
-        });
-        
-        songRows[i].addEventListener('click', function(event){
-           //event handler call 
-            clickHandler(event.target);
-        });
-    }
-};
+});
 
 
