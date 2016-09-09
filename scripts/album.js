@@ -1,19 +1,23 @@
 var setSong = function(songNumber) {
-    //define songNumber because it isn't defined in the global scope.
-    var songNumber = parseInt($(this).attr('data-song-number'));
-    //conditions from clickHandler function 
+    
+    //solution code
+    //currentlyPlayingSongNumber = parseInt(songNumber);
+    //currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
+    
+    //my code 
     if (currentlyPlayingSongNumber !== songNumber) {
         currentlyPlayingSongNumber = songNumber;
         currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
-    } else if (currentlyPlayingSongNumber === songNumber) {
+    } else if (currentlyPlayingSongNumber === songNumber) { //why does this not work if it is just an 'else' versus an 'else if'?
         currentlyPlayingSongNumber = null;
         currentSongFromAlbum = null;
-    } else { //conditions from nextSong or previousSong functions and if they are invoked because they do the same thing.
-        currentlyPlayingSongNumber = currentSongIndex + 1;
-        currentSongFromAlbum = currentAlbum.songs[currentSongIndex];
     } 
     
 };
+
+var getSongNumberCell = function(number) {
+    return $('.song-item-number[data-song-number="' + number + '"]');
+}
 
 var createSongRow = function(songNumber, songName, songLength) {
     var template = 
@@ -31,20 +35,20 @@ var createSongRow = function(songNumber, songName, songLength) {
         
         if (currentlyPlayingSongNumber !== null) {
             //revert to song number for currently playing song because user started playing a new song.
-            var currentlyPlayingCell = $('.song-item-number[data-song-number="' + currentlyPlayingSongNumber + '"]');
+            var currentlyPlayingCell = getSongNumberCell(currentlyPlayingSongNumber);
             currentlyPlayingCell.html(currentlyPlayingSongNumber);            
         }
         
         if (currentlyPlayingSongNumber !== songNumber) {
             //switch from play to pause button to indicate a new song is playing.
             $(this).html(pauseButtonTemplate);
-            setSong();
+            setSong(songNumber);
             updatePlayerBarSong();
         } else if (currentlyPlayingSongNumber === songNumber) {
             //switch from pause to play button to pause currently playing song.
             $(this).html(playButtonTemplate);
             $('.main-controls .play-pause').html(playerBarPlayButton);
-            setSong();
+            setSong(songNumber);
         }
                 
     };
@@ -130,7 +134,8 @@ var nextSong = function() {
     }
     
     //Set a new current song
-    setSong();
+    currentlyPlayingSongNumber = currentSongIndex + 1;
+    currentSongFromAlbum = currentAlbum.songs[currentSongIndex];
     
     //Update the player bar information - why wouldn't we just call the already existing updatePlayerBarSong?
     $('.currently-playing .song-name').text(currentSongFromAlbum.title);
@@ -139,8 +144,8 @@ var nextSong = function() {
     $('.main-controls .play-pause').html(playerBarPauseButton);
     
     var lastSongNumber = getLastSongNumber(currentSongIndex);
-    var $nextSongNumberCell = $('.song-item-number[data-song-number="' + currentlyPlayingSongNumber + '"]');
-    var $lastSongNumberCell = $('.song-item-number[data-song-number="' + lastSongNumber + '"]');
+    var $nextSongNumberCell = getSongNumberCell(currentlyPlayingSongNumber);
+    var $lastSongNumberCell = getSongNumberCell(lastSongNumber);
     
     $nextSongNumberCell.html(pauseButtonTemplate);
     $lastSongNumberCell.html(lastSongNumber);
@@ -160,7 +165,8 @@ var previousSong = function() {
     }
     
     //Set a new current song
-    setSong();
+    currentlyPlayingSongNumber = currentSongIndex + 1;
+    currentSongFromAlbum = currentAlbum.songs[currentSongIndex];
     
     //Update the player bar information - why wouldn't we just call the already existing updatePlayerBarSong?
     $('.currently-playing .song-name').text(currentSongFromAlbum.title);
@@ -169,8 +175,8 @@ var previousSong = function() {
     $('.main-controls .play-pause').html(playerBarPauseButton);
     
     var lastSongNumber = getLastSongNumber(currentSongIndex);
-    var $nextSongNumberCell = $('.song-item-number[data-song-number="' + currentlyPlayingSongNumber + '"]');
-    var $lastSongNumberCell = $('.song-item-number[data-song-number="' + lastSongNumber + '"]');
+    var $nextSongNumberCell = getSongNumberCell(currentlyPlayingSongNumber);
+    var $lastSongNumberCell = getSongNumberCell(lastSongNumber);
     
     $nextSongNumberCell.html(pauseButtonTemplate);
     $lastSongNumberCell.html(lastSongNumber);
