@@ -1,10 +1,15 @@
 var setSong = function(songNumber) {
     
+    if (currentSoundFile) {
+        currentSoundFile.stop();
+    }
+    
     //solution code
-    //currentlyPlayingSongNumber = parseInt(songNumber);
-    //currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
+    currentlyPlayingSongNumber = parseInt(songNumber);
+    currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
     
     //my code 
+    /*
     if (currentlyPlayingSongNumber !== songNumber) {
         currentlyPlayingSongNumber = songNumber;
         currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
@@ -12,6 +17,13 @@ var setSong = function(songNumber) {
         currentlyPlayingSongNumber = null;
         currentSongFromAlbum = null;
     } 
+    */
+    //#1 we assign a new Buzz sound object and passed the audio file via the audioUrl property on the currentSongFromAlbum object.
+    currentSoundFile = new buzz.sound(currentSongFromAlbum.audioUrl, {
+        //#2 we've passed in a settings object that has two properties defined, formats and preload. formats is an array of strings with acceptable audio formats. We've only included the 'mp3' string because all of our songs are mp3s. Setting the preload property to true tells Buzz that we want the mp3s loaded as soon as the page loads.
+        formats: [ 'mp3'],
+        preload: true
+    });
     
 };
 
@@ -36,19 +48,28 @@ var createSongRow = function(songNumber, songName, songLength) {
         if (currentlyPlayingSongNumber !== null) {
             //revert to song number for currently playing song because user started playing a new song.
             var currentlyPlayingCell = getSongNumberCell(currentlyPlayingSongNumber);
+            currentlyPlayingCell = getSongNumberCell(currentlyPlayingSongNumber)
             currentlyPlayingCell.html(currentlyPlayingSongNumber);            
         }
         
         if (currentlyPlayingSongNumber !== songNumber) {
             //switch from play to pause button to indicate a new song is playing.
-            $(this).html(pauseButtonTemplate);
             setSong(songNumber);
+            currentSoundFile.play();
+            $(this).html(pauseButtonTemplate);
+            currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
             updatePlayerBarSong();
         } else if (currentlyPlayingSongNumber === songNumber) {
             //switch from pause to play button to pause currently playing song.
-            $(this).html(playButtonTemplate);
-            $('.main-controls .play-pause').html(playerBarPlayButton);
-            setSong(songNumber);
+            if (currentSoundFile.isPaused()) {
+                $(this).html(pauseButtonTemplate);
+                $('.main-controls .play-pause').html(playerBarPauseButton);
+                currentSoundFile.play();
+            } else {
+                $(this).html(playButtonTemplate);
+                $('.main-controls .play-pause').html(playerBarPlayButton);
+                currentSoundFile.pause();   
+           }
         }
                 
     };
@@ -134,8 +155,9 @@ var nextSong = function() {
     }
     
     //Set a new current song
-    currentlyPlayingSongNumber = currentSongIndex + 1;
-    currentSongFromAlbum = currentAlbum.songs[currentSongIndex];
+    setSong(currentSongIndex + 1);
+    currentSoundFile.play();
+    updatePlayerBarSong();
     
     //Update the player bar information - why wouldn't we just call the already existing updatePlayerBarSong?
     $('.currently-playing .song-name').text(currentSongFromAlbum.title);
@@ -165,8 +187,9 @@ var previousSong = function() {
     }
     
     //Set a new current song
-    currentlyPlayingSongNumber = currentSongIndex + 1;
-    currentSongFromAlbum = currentAlbum.songs[currentSongIndex];
+    setSong(currentSongIndex + 1);
+    currentSoundFile.play();
+    updatePlayerBarSong();
     
     //Update the player bar information - why wouldn't we just call the already existing updatePlayerBarSong?
     $('.currently-playing .song-name').text(currentSongFromAlbum.title);
@@ -202,6 +225,7 @@ var playerBarPauseButton = '<span class="ion-pause"></span>';
 var currentAlbum = null;
 var currentlyPlayingSongNumber = null;
 var currentSongFromAlbum = null;
+var currentSoundFile = null;
 
 var $previousButton = $('.main-controls .previous');
 var $nextButton = $('.main-controls .next');
