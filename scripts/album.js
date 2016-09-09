@@ -1,3 +1,20 @@
+var setSong = function(songNumber) {
+    //define songNumber because it isn't defined in the global scope.
+    var songNumber = parseInt($(this).attr('data-song-number'));
+    //conditions from clickHandler function 
+    if (currentlyPlayingSongNumber !== songNumber) {
+        currentlyPlayingSongNumber = songNumber;
+        currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
+    } else if (currentlyPlayingSongNumber === songNumber) {
+        currentlyPlayingSongNumber = null;
+        currentSongFromAlbum = null;
+    } else { //conditions from nextSong or previousSong functions and if they are invoked because they do the same thing.
+        currentlyPlayingSongNumber = currentSongIndex + 1;
+        currentSongFromAlbum = currentAlbum.songs[currentSongIndex];
+    } 
+    
+};
+
 var createSongRow = function(songNumber, songName, songLength) {
     var template = 
         '<tr class="album-view-song-item">'
@@ -21,15 +38,13 @@ var createSongRow = function(songNumber, songName, songLength) {
         if (currentlyPlayingSongNumber !== songNumber) {
             //switch from play to pause button to indicate a new song is playing.
             $(this).html(pauseButtonTemplate);
-            currentlyPlayingSongNumber = songNumber; 
-            currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
+            setSong();
             updatePlayerBarSong();
         } else if (currentlyPlayingSongNumber === songNumber) {
             //switch from pause to play button to pause currently playing song.
             $(this).html(playButtonTemplate);
             $('.main-controls .play-pause').html(playerBarPlayButton);
-            currentlyPlayingSongNumber = null;
-            currentSongFromAlbum = null;
+            setSong();
         }
                 
     };
@@ -66,6 +81,8 @@ var createSongRow = function(songNumber, songName, songLength) {
     return $row;
 };
 
+
+
 var setCurrentAlbum = function(album) {
     currentAlbum = album;
     
@@ -97,7 +114,7 @@ var trackIndex = function(album, song) {
     return album.songs.indexOf(song);
 }
 
-var nextStong = function() {
+var nextSong = function() {
     //I don't quite understand how this is working...
     var getLastSongNumber = function(index) {
         return index == 0 ? currentAlbum.songs.length : index;
@@ -113,8 +130,7 @@ var nextStong = function() {
     }
     
     //Set a new current song
-    currentlyPlayingSongNumber = currentSongIndex + 1;
-    currentSongFromAlbum = currentAlbum.songs[currentSongIndex];
+    setSong();
     
     //Update the player bar information - why wouldn't we just call the already existing updatePlayerBarSong?
     $('.currently-playing .song-name').text(currentSongFromAlbum.title);
@@ -144,8 +160,7 @@ var previousSong = function() {
     }
     
     //Set a new current song
-    currentlyPlayingSongNumber = currentSongIndex + 1;
-    currentSongFromAlbum = currentAlbum.songs[currentSongIndex];
+    setSong();
     
     //Update the player bar information - why wouldn't we just call the already existing updatePlayerBarSong?
     $('.currently-playing .song-name').text(currentSongFromAlbum.title);
@@ -188,7 +203,7 @@ var $nextButton = $('.main-controls .next');
 $(document).ready(function() {
     setCurrentAlbum(albumPicasso);
     $previousButton.click(previousSong);
-    $nextButton.click(nextStong);
+    $nextButton.click(nextSong);
     
 });
 
