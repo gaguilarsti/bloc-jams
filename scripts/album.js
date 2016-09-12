@@ -111,7 +111,7 @@ var createSongRow = function(songNumber, songName, songLength) {
             $volumeThumb.css({left: currentVolume + '%'});
             
             $(this).html(pauseButtonTemplate);
-            updatePlayerBarSong();   //this should load the song/album information and load the total time.  This appears to be the initial play click.  Not sure why it's not working.
+            
             
         } else if (currentlyPlayingSongNumber === songNumber) {
             //switch from pause to play button to pause currently playing song.
