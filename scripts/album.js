@@ -76,11 +76,6 @@ var getSongNumberCell = function(number) {
     return $('.song-item-number[data-song-number="' + number + '"]');
 }
 
-var setTotalTimeInPlayerBar = function(totalTime) {
-    
-    $('.total-time').text(totalTime);
-};
-
 var createSongRow = function(songNumber, songName, songLength) {
     var template = 
         '<tr class="album-view-song-item">'
