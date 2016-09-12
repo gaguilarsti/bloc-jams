@@ -4,20 +4,11 @@ var setSong = function(songNumber) {
         currentSoundFile.stop();
     }
     
-    //solution code
+    //solution code - optimized to only set the song, not unsetting the song. 
     currentlyPlayingSongNumber = parseInt(songNumber);
     currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
     
-    //my code 
-    /*
-    if (currentlyPlayingSongNumber !== songNumber) {
-        currentlyPlayingSongNumber = songNumber;
-        currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
-    } else if (currentlyPlayingSongNumber === songNumber) { //why does this not work if it is just an 'else' versus an 'else if'?
-        currentlyPlayingSongNumber = null;
-        currentSongFromAlbum = null;
-    } 
-    */
+    
     //#1 we assign a new Buzz sound object and passed the audio file via the audioUrl property on the currentSongFromAlbum object.
     currentSoundFile = new buzz.sound(currentSongFromAlbum.audioUrl, {
         //#2 we've passed in a settings object that has two properties defined, formats and preload. formats is an array of strings with acceptable audio formats. We've only included the 'mp3' string because all of our songs are mp3s. Setting the preload property to true tells Buzz that we want the mp3s loaded as soon as the page loads.
@@ -210,11 +201,11 @@ var togglePlayFromPlayerBar = function() {
     var $currentSongNumberCell = getSongNumberCell(currentlyPlayingSongNumber);
     
     //if song is paused and the play button is clicked:
-    if (currentSoundFile.isPaused) {
+    if (currentSoundFile.isPaused()) {
         $currentSongNumberCell.html(pauseButtonTemplate);
         $('.main-controls .play-pause').html(playerBarPauseButton);
         currentSoundFile.play();
-    } else if (currentSoundFile) { //if song is playing
+    } else if (currentSoundFile !== null) { //if song is playing
         $currentSongNumberCell.html(playButtonTemplate);
         $('.main-controls .play-pause').html(playerBarPlayButton);
         currentSoundFile.pause();
